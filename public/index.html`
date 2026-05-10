@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Riya 💕 Tor Bestie</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    #chat { width: 100%; max-width: 450px; background: white; border-radius: 25px; box-shadow: 0 10px 40px rgba(255,105,180,0.2); overflow: hidden; }
+    #header { background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%); color: white; padding: 20px; text-align: center; font-weight: 600; font-size: 18px; }
+    #header span { font-size: 12px; opacity: 0.9; display: block; margin-top: 3px; }
+    #messages { height: 500px; overflow-y: auto; padding: 20px; background: #fafafa; }
+    .msg { margin: 12px 0; padding: 12px 16px; border-radius: 18px; max-width: 75%; word-wrap: break-word; animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .user { background: linear-gradient(135deg, #dcf8c6 0%, #bfe8a8 100%); margin-left: auto; border-bottom-right-radius: 5px; }
+    .bot { background: white; border: 1px solid #f0f0f0; border-bottom-left-radius: 5px; }
+    #input-area { display: flex; padding: 15px; background: white; border-top: 1px solid #f0f0f0; }
+    #input { flex: 1; padding: 12px 18px; border: 2px solid #ffe0f0; border-radius: 25px; outline: none; font-size: 14px; }
+    #input:focus { border-color: #ff69b4; }
+    #send { background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%); color: white; border: none; padding: 12px 24px; margin-left: 10px; border-radius: 25px; cursor: pointer; font-weight: 600; transition: transform 0.2s; }
+    #send:active { transform: scale(0.95); }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <div id="header">
+      Riya 💕 Tor Bengali Bestie
+      <span>Online • Hamesha tor jonno</span>
+    </div>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input id="input" placeholder="Message likh sona..." autocomplete="off" />
+      <button id="send">Send</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messages = document.getElementById('messages');
+    const input = document.getElementById('input');
+    const send = document.getElementById('send');
+
+    function addMsg(text, who) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + who;
+      div.textContent = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    socket.on('bot message', (msg) => addMsg(msg, 'bot'));
+    
+    function sendMsg() {
+      if (input.value.trim()) {
+        addMsg(input.value, 'user');
+        socket.emit('user message', input.value);
+        input.value = '';
+      }
+    }
+    
+    send.onclick = sendMsg;
+    input.onkeypress = (e) => { if(e.key === 'Enter') sendMsg(); };
+    input.focus();
+  </script>
+</body>
+</html>
